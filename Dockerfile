@@ -61,8 +61,9 @@ COPY package*.json ./
 RUN npm ci --omit=dev
 
 # Copy built output and templates
+# TemplateLoader uses __dirname (dist/engine/) -> resolves to dist/templates/
 COPY --from=builder /app/dist ./dist
-COPY src/templates ./src/templates
+COPY src/templates ./dist/templates
 
 EXPOSE 3000
 
