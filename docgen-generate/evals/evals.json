@@ -1,0 +1,23 @@
+{
+  "skill_name": "docgen-generate",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Tolong buatkan invoice untuk klien saya. Nama kliennya PT Maju Bersama, alamatnya Jl. Kebon Jeruk No. 5 Jakarta Barat. Item-nya: 'Pengembangan Website' 1 unit harga Rp 8.000.000, dan 'Domain + Hosting 1 tahun' 1 unit harga Rp 500.000. PPN 11%. Nomor invoicenya INV-2026-007, tanggal hari ini, jatuh tempo 30 hari lagi. Perusahaan saya namanya CV Karya Digital.",
+      "expected_output": "PDF invoice tersimpan ke disk. File berisi data klien PT Maju Bersama, 2 line item, subtotal Rp 8.500.000, PPN Rp 935.000, total Rp 9.435.000. Konfirmasi singkat ke user dengan nama file dan total.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Make a receipt PDF. Client: John Doe, paid for 'Monthly Retainer - March 2026' x1 at Rp 5,000,000. Payment via bank transfer. No tax. Save it.",
+      "expected_output": "PDF receipt tersimpan ke disk. File berisi payer John Doe, 1 line item, total Rp 5.000.000, payment_method bank transfer. Konfirmasi ke user.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Buatin invoice draft buat presentasi ke klien ya. Kliennya PT Horizon Nusantara, di Surabaya. Itemnya: konsultasi IT 5 hari x Rp 2.000.000/hari, dan setup server 1x Rp 3.500.000. Kasih watermark DRAFT. Tanggal bebas aja.",
+      "expected_output": "PDF invoice tersimpan dengan watermark DRAFT. Subtotal Rp 13.500.000. Total dihitung dengan benar. File dikonfirmasi ke user.",
+      "files": []
+    }
+  ]
+}
