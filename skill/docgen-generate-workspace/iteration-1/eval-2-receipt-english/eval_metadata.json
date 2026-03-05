@@ -1,0 +1,12 @@
+{
+  "eval_id": 2,
+  "eval_name": "eval-2-receipt-english",
+  "prompt": "Make a receipt PDF. Client: John Doe, paid for 'Monthly Retainer - March 2026' x1 at Rp 5,000,000. Payment via bank transfer. No tax. Save it.",
+  "assertions": [
+    { "text": "PDF file exists and is non-empty" },
+    { "text": "PDF generated without needing to inspect source code or guess schema" },
+    { "text": "Total is Rp 5.000.000 (no tax applied)" },
+    { "text": "Payer name John Doe included" },
+    { "text": "Payment method bank transfer included" }
+  ]
+}

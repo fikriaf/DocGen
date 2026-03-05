@@ -1,0 +1,32 @@
+{
+  "eval_id": 2,
+  "eval_name": "eval-2-receipt-english",
+  "prompt": "Make a receipt PDF. Client: John Doe...",
+  "assertions": [
+    {
+      "text": "PDF file exists and is non-empty",
+      "passed": true,
+      "evidence": "with_skill: ~72 KB PDF saved."
+    },
+    {
+      "text": "PDF generated without needing to inspect source code or guess schema",
+      "passed": true,
+      "evidence": "with_skill used correct snake_case field names from SKILL.md directly. Single successful API call."
+    },
+    {
+      "text": "Total is Rp 5.000.000 (no tax applied)",
+      "passed": true,
+      "evidence": "total: 5000000, tax omitted or 0."
+    },
+    {
+      "text": "Payer name John Doe included",
+      "passed": true,
+      "evidence": "payer_name: John Doe."
+    },
+    {
+      "text": "Payment method bank transfer included",
+      "passed": true,
+      "evidence": "payment_method: Bank Transfer."
+    }
+  ]
+}

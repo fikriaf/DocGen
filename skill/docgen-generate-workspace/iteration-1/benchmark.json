@@ -1,0 +1,109 @@
+{
+  "skill_name": "docgen-generate",
+  "iteration": 1,
+  "summary": {
+    "with_skill": {
+      "pass_rate": 1.0,
+      "assertions_passed": 15,
+      "assertions_total": 15
+    },
+    "without_skill": {
+      "pass_rate": 0.867,
+      "assertions_passed": 13,
+      "assertions_total": 15
+    }
+  },
+  "evals": [
+    {
+      "eval_id": 1,
+      "eval_name": "eval-1-invoice-rupiah",
+      "with_skill": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "total": 5,
+        "assertions": [
+          { "text": "PDF file exists and is non-empty", "passed": true },
+          { "text": "PDF generated on first API attempt (no retry needed)", "passed": true },
+          { "text": "Total calculated correctly as Rp 9.435.000", "passed": true },
+          { "text": "Invoice number INV-2026-007 used", "passed": true },
+          { "text": "Client name PT Maju Bersama included", "passed": true }
+        ]
+      },
+      "without_skill": {
+        "pass_rate": 0.8,
+        "passed": 4,
+        "total": 5,
+        "assertions": [
+          { "text": "PDF file exists and is non-empty", "passed": true },
+          { "text": "PDF generated on first API attempt (no retry needed)", "passed": false },
+          { "text": "Total calculated correctly as Rp 9.435.000", "passed": true },
+          { "text": "Invoice number INV-2026-007 used", "passed": true },
+          { "text": "Client name PT Maju Bersama included", "passed": true }
+        ]
+      }
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "eval-2-receipt-english",
+      "with_skill": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "total": 5,
+        "assertions": [
+          { "text": "PDF file exists and is non-empty", "passed": true },
+          { "text": "PDF generated without needing to inspect source code or guess schema", "passed": true },
+          { "text": "Total is Rp 5.000.000 (no tax applied)", "passed": true },
+          { "text": "Payer name John Doe included", "passed": true },
+          { "text": "Payment method bank transfer included", "passed": true }
+        ]
+      },
+      "without_skill": {
+        "pass_rate": 0.8,
+        "passed": 4,
+        "total": 5,
+        "assertions": [
+          { "text": "PDF file exists and is non-empty", "passed": true },
+          { "text": "PDF generated without needing to inspect source code or guess schema", "passed": false },
+          { "text": "Total is Rp 5.000.000 (no tax applied)", "passed": true },
+          { "text": "Payer name John Doe included", "passed": true },
+          { "text": "Payment method bank transfer included", "passed": true }
+        ]
+      }
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "eval-3-draft-watermark",
+      "with_skill": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "total": 5,
+        "assertions": [
+          { "text": "PDF file exists and is non-empty", "passed": true },
+          { "text": "Watermark enabled in API request", "passed": true },
+          { "text": "Total calculated correctly as Rp 13.500.000", "passed": true },
+          { "text": "Watermark text is DRAFT", "passed": true },
+          { "text": "Client name PT Horizon Nusantara included", "passed": true }
+        ]
+      },
+      "without_skill": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "total": 5,
+        "assertions": [
+          { "text": "PDF file exists and is non-empty", "passed": true },
+          { "text": "Watermark enabled in API request", "passed": true },
+          { "text": "Total calculated correctly as Rp 13.500.000", "passed": true },
+          { "text": "Watermark text is DRAFT", "passed": true },
+          { "text": "Client name PT Horizon Nusantara included", "passed": true }
+        ]
+      }
+    }
+  ],
+  "analyst_observations": [
+    "The key discriminating assertion is 'PDF generated on first API attempt (no retry needed)' — with_skill passes all 3, without_skill fails eval-1 (guessed camelCase, got 422) and needed source code inspection for eval-2.",
+    "Eval-3 (watermark) is non-discriminating: both with and without skill succeeded with correct watermark. This means the watermark scenario is not a strong differentiator — the skill's value is in knowing field names upfront, not in watermark handling.",
+    "without_skill showed inconsistent behavior: eval-1 guessed incorrectly, eval-2 inspected source code, eval-3 used opacity 0.3 (vs 0.12 default). The skill enforces consistent defaults.",
+    "All totals were calculated correctly in both conditions — math is not a differentiator.",
+    "Skill improvement opportunity: make the 'no guessing, no retries' behavior more explicit in SKILL.md, and add a note about the default watermark opacity to prevent the 0.3 deviation seen in without_skill eval-3."
+  ]
+}

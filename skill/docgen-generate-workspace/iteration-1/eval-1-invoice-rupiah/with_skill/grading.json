@@ -1,0 +1,32 @@
+{
+  "eval_id": 1,
+  "eval_name": "eval-1-invoice-rupiah",
+  "prompt": "Tolong buatkan invoice untuk klien saya...",
+  "assertions": [
+    {
+      "text": "PDF file exists and is non-empty",
+      "passed": true,
+      "evidence": "with_skill: 79,254 bytes. without_skill: 77,572 bytes."
+    },
+    {
+      "text": "PDF generated on first API attempt (no retry needed)",
+      "passed": true,
+      "evidence": "with_skill: single POST /generate call succeeded HTTP 200. without_skill: FAILED first attempt with 422, needed 2 attempts due to camelCase field guessing."
+    },
+    {
+      "text": "Total calculated correctly as Rp 9.435.000 (subtotal 8.500.000 + PPN 11% 935.000)",
+      "passed": true,
+      "evidence": "with_skill total: 9435000. without_skill total: 9435000. Both correct."
+    },
+    {
+      "text": "Invoice number INV-2026-007 used",
+      "passed": true,
+      "evidence": "with_skill: INV-2026-007. without_skill: INV-2026-007."
+    },
+    {
+      "text": "Client name PT Maju Bersama included",
+      "passed": true,
+      "evidence": "Both runs included PT Maju Bersama as client_name."
+    }
+  ]
+}

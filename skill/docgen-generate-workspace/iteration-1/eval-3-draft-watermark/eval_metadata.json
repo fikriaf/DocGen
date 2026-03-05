@@ -1,0 +1,12 @@
+{
+  "eval_id": 3,
+  "eval_name": "eval-3-draft-watermark",
+  "prompt": "Buatin invoice draft buat presentasi ke klien ya. Kliennya PT Horizon Nusantara, di Surabaya. Itemnya: konsultasi IT 5 hari x Rp 2.000.000/hari, dan setup server 1x Rp 3.500.000. Kasih watermark DRAFT. Tanggal bebas aja.",
+  "assertions": [
+    { "text": "PDF file exists and is non-empty" },
+    { "text": "Watermark enabled in API request (options.watermark.enabled: true)" },
+    { "text": "Total calculated correctly as Rp 13.500.000 (5x2.000.000 + 3.500.000)" },
+    { "text": "Watermark text is DRAFT" },
+    { "text": "Client name PT Horizon Nusantara included" }
+  ]
+}

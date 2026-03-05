@@ -1,0 +1,32 @@
+{
+  "eval_id": 1,
+  "eval_name": "eval-1-invoice-rupiah",
+  "prompt": "Tolong buatkan invoice untuk klien saya...",
+  "assertions": [
+    {
+      "text": "PDF file exists and is non-empty",
+      "passed": true,
+      "evidence": "without_skill: 77,572 bytes. PDF saved successfully."
+    },
+    {
+      "text": "PDF generated on first API attempt (no retry needed)",
+      "passed": false,
+      "evidence": "without_skill made first attempt with camelCase fields (invoiceNumber, dueDate, etc.) and received 422. Required a second attempt after discovering snake_case convention from error message."
+    },
+    {
+      "text": "Total calculated correctly as Rp 9.435.000 (subtotal 8.500.000 + PPN 11% 935.000)",
+      "passed": true,
+      "evidence": "Total 9435000 is correct."
+    },
+    {
+      "text": "Invoice number INV-2026-007 used",
+      "passed": true,
+      "evidence": "without_skill used INV-2026-007."
+    },
+    {
+      "text": "Client name PT Maju Bersama included",
+      "passed": true,
+      "evidence": "PT Maju Bersama included."
+    }
+  ]
+}

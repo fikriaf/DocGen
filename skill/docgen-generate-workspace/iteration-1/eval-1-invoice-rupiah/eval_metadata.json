@@ -1,0 +1,12 @@
+{
+  "eval_id": 1,
+  "eval_name": "eval-1-invoice-rupiah",
+  "prompt": "Tolong buatkan invoice untuk klien saya. Nama kliennya PT Maju Bersama, alamatnya Jl. Kebon Jeruk No. 5 Jakarta Barat. Item-nya: 'Pengembangan Website' 1 unit harga Rp 8.000.000, dan 'Domain + Hosting 1 tahun' 1 unit harga Rp 500.000. PPN 11%. Nomor invoicenya INV-2026-007, tanggal hari ini, jatuh tempo 30 hari lagi. Perusahaan saya namanya CV Karya Digital.",
+  "assertions": [
+    { "text": "PDF file exists and is non-empty" },
+    { "text": "PDF generated on first API attempt (no retry needed)" },
+    { "text": "Total calculated correctly as Rp 9.435.000 (subtotal 8.500.000 + PPN 11% 935.000)" },
+    { "text": "Invoice number INV-2026-007 used" },
+    { "text": "Client name PT Maju Bersama included" }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "eval_id": 3,
+  "eval_name": "eval-3-draft-watermark",
+  "prompt": "Buatin invoice draft...",
+  "assertions": [
+    {
+      "text": "PDF file exists and is non-empty",
+      "passed": true,
+      "evidence": "with_skill: ~65 KB PDF saved."
+    },
+    {
+      "text": "Watermark enabled in API request (options.watermark.enabled: true)",
+      "passed": true,
+      "evidence": "with_skill: options.watermark.enabled: true. Text DRAFT, opacity 0.12, color #cc0000."
+    },
+    {
+      "text": "Total calculated correctly as Rp 13.500.000 (5x2.000.000 + 3.500.000)",
+      "passed": true,
+      "evidence": "subtotal: 13500000, total: 13500000."
+    },
+    {
+      "text": "Watermark text is DRAFT",
+      "passed": true,
+      "evidence": "watermark.text: DRAFT."
+    },
+    {
+      "text": "Client name PT Horizon Nusantara included",
+      "passed": true,
+      "evidence": "client_name: PT Horizon Nusantara."
+    }
+  ]
+}
