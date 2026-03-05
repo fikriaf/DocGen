@@ -71,8 +71,11 @@ const invoiceRules: ExtractRule[] = [
       for (const p of patterns) {
         const m = text.match(p);
         if (m?.[1]) {
-          // Collapse internal spaces around hyphens: "CAEGR - INV - 260227" → "CAEGR-INV-260227"
-          const val = m[1].trim().replace(/\s*-\s*/g, '-').replace(/\s+/g, ' ');
+          // Collapse spaces around hyphens, then collapse digit-space-digit
+          const val = m[1].trim()
+            .replace(/\s*-\s*/g, '-')   // "CAEGR - INV" → "CAEGR-INV"
+            .replace(/(\d)\s+(\d)/g, '$1$2') // "26 0 22 7" → "260227"
+            .replace(/\s+/g, ' ').trim();
           if (val.length > 2) return { value: val, confidence: 0.9 };
         }
       }
@@ -120,8 +123,8 @@ const invoiceRules: ExtractRule[] = [
     field: 'client_name',
     extract: (text) => {
       const patterns = [
-        // "Bill To\nMELLY CANDRAWAN" — nama di baris berikutnya
-        /(?:Kepada|Tagihan\s*Kepada|Billed?\s*To|Client|Customer|Pelanggan)[:\s]*\n\s*([A-Z][^\n]{2,60})/im,
+        // "Bill To\nMELLY CANDRAWAN" — toleran trailing space sebelum newline
+        /(?:Kepada|Tagihan\s*Kepada|Billed?\s*To|Client|Customer|Pelanggan)[:\s]*\s*\n\s*([A-Z][^\n]{2,60})/im,
         // Inline: "Kepada: PT Maju"
         /(?:Kepada|Tagihan\s*Kepada|Billed?\s*To|Client|Customer|Pelanggan)[:\s]+([A-Z][^\n]{2,60})/im,
         /(?:Yth\.?|Kepada\s*Yth\.?)[:\s]*\n?\s*([A-Z][^\n]{2,60})/im,
@@ -130,6 +133,8 @@ const invoiceRules: ExtractRule[] = [
         const m = text.match(p);
         if (m?.[1]) {
           const val = m[1].trim().replace(/\s+/g, ' ');
+          // Reject jika terlihat seperti label (Company Name, Description, dll.)
+          if (/^(?:Company|Description|Item|Subtotal|Total|Invoice|Receipt)/i.test(val)) continue;
           if (val.length > 2) return { value: val, confidence: 0.8 };
         }
       }
