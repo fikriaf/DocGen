@@ -1,6 +1,6 @@
 # docgen-generate
 
-An agent skill for generating professional PDF business documents (invoices and receipts) using the [DocGen Engine](https://github.com/your-username/DocGen) local REST API.
+An agent skill for generating professional PDF business documents (invoices and receipts) using the [DocGen Engine](https://github.com/fikriaf/DocGen) REST API — deployed on Railway, no local setup required.
 
 ## What it does
 
@@ -12,13 +12,13 @@ When installed, this skill enables your AI agent to:
 
 ## Requirements
 
-- [DocGen Engine](https://github.com/your-username/DocGen) running locally on `http://localhost:3000`
-- Start it with: `npm run dev` inside the DocGen project folder
+No local server needed. The skill calls the live production API at:
+`https://docgen-production-503d.up.railway.app`
 
 ## Install
 
 ```bash
-npx skills add https://github.com/your-username/agent-skills --skill docgen-generate
+npx skills add https://github.com/fikriaf/DocGen --skill docgen-generate
 ```
 
 ## Usage
@@ -39,4 +39,4 @@ Just ask your agent naturally:
 
 ## Skill file
 
-See [`docgen-generate/SKILL.md`](./docgen-generate/SKILL.md) for the full skill instructions.
+See [`docgen-generate/SKILL.md`](../docgen-generate/SKILL.md) for the full skill instructions.
