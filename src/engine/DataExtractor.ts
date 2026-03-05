@@ -63,12 +63,18 @@ const invoiceRules: ExtractRule[] = [
     field: 'invoice_number',
     extract: (text) => {
       const patterns = [
-        /(?:No\.?\s*Invoice|Invoice\s*No\.?|Nomor\s*Invoice|No\s*Inv\.?|Invoice\s*#|INV)[:\s#]*([A-Z0-9][A-Z0-9\-\/\.]+)/i,
+        // "Invoice No : CAEGR - INV - 260227 - MCT26" — dengan atau tanpa spasi di sekitar tanda hubung
+        /(?:No\.?\s*Invoice|Invoice\s*No\.?|Nomor\s*Invoice|No\s*Inv\.?|Invoice\s*#)[:\s#]*([A-Z0-9][\w\s\-\/\.]{3,60}?)(?:\n|$)/im,
+        // Compact: INV-2026-001
         /\b(INV[-\/]?\d{4}[-\/]?\d{2,6})\b/i,
       ];
       for (const p of patterns) {
         const m = text.match(p);
-        if (m?.[1]) return { value: m[1].trim(), confidence: 0.9 };
+        if (m?.[1]) {
+          // Collapse internal spaces around hyphens: "CAEGR - INV - 260227" → "CAEGR-INV-260227"
+          const val = m[1].trim().replace(/\s*-\s*/g, '-').replace(/\s+/g, ' ');
+          if (val.length > 2) return { value: val, confidence: 0.9 };
+        }
       }
       return { value: null, confidence: 0 };
     },
@@ -77,11 +83,17 @@ const invoiceRules: ExtractRule[] = [
     field: 'issue_date',
     extract: (text) => {
       const patterns = [
-        /(?:Tanggal|Tgl\.?|Date|Issued?)[:\s]*(\d{1,2}[\s\/\-\.]\w+[\s\/\-\.]\d{4}|\d{4}[-\/]\d{2}[-\/]\d{2}|\d{1,2}[-\/]\d{1,2}[-\/]\d{4})/i,
+        // "Invoice Date : 2 7 February 202 6" — spasi di dalam angka/kata
+        /(?:Invoice\s*Date|Tanggal\s*Invoice|Tgl\.?\s*Invoice|Issue\s*Date|Issued?)[:\s]*(\d[\d\s]{0,3}\w[\w\s]{2,12}\d[\d\s]{2,5})/i,
+        // Standard: "Date : 27 February 2026"
+        /(?:Tanggal|Tgl\.?|Date)[:\s]*(\d{1,2}[\s\/\-\.]\w+[\s\/\-\.]\d{4}|\d{4}[-\/]\d{2}[-\/]\d{2}|\d{1,2}[-\/]\d{1,2}[-\/]\d{4})/i,
       ];
       for (const p of patterns) {
         const m = text.match(p);
-        if (m?.[1]) return { value: normalizeDate(m[1].trim()), confidence: 0.85 };
+        if (m?.[1]) {
+          const cleaned = m[1].trim().replace(/\s+/g, ' ').replace(/(\d)\s+(\d)/g, '$1$2');
+          return { value: normalizeDate(cleaned), confidence: 0.85 };
+        }
       }
       return { value: null, confidence: 0 };
     },
@@ -90,11 +102,16 @@ const invoiceRules: ExtractRule[] = [
     field: 'due_date',
     extract: (text) => {
       const patterns = [
+        // "Due Date : 3 March 202 6"
+        /(?:Jatuh\s*Tempo|Due\s*Date|Batas\s*Bayar|Payment\s*Due)[:\s]*(\d[\d\s]{0,3}\w[\w\s]{2,12}\d[\d\s]{2,5})/i,
         /(?:Jatuh\s*Tempo|Due\s*Date|Batas\s*Bayar|Payment\s*Due)[:\s]*(\d{1,2}[\s\/\-\.]\w+[\s\/\-\.]\d{4}|\d{4}[-\/]\d{2}[-\/]\d{2}|\d{1,2}[-\/]\d{1,2}[-\/]\d{4})/i,
       ];
       for (const p of patterns) {
         const m = text.match(p);
-        if (m?.[1]) return { value: normalizeDate(m[1].trim()), confidence: 0.85 };
+        if (m?.[1]) {
+          const cleaned = m[1].trim().replace(/\s+/g, ' ').replace(/(\d)\s+(\d)/g, '$1$2');
+          return { value: normalizeDate(cleaned), confidence: 0.85 };
+        }
       }
       return { value: null, confidence: 0 };
     },
@@ -103,7 +120,10 @@ const invoiceRules: ExtractRule[] = [
     field: 'client_name',
     extract: (text) => {
       const patterns = [
-        /(?:Kepada|Tagihan\s*Kepada|Billed?\s*To|Client|Customer|Pelanggan)[:\s]*\n?\s*([A-Z][^\n]{2,60})/im,
+        // "Bill To\nMELLY CANDRAWAN" — nama di baris berikutnya
+        /(?:Kepada|Tagihan\s*Kepada|Billed?\s*To|Client|Customer|Pelanggan)[:\s]*\n\s*([A-Z][^\n]{2,60})/im,
+        // Inline: "Kepada: PT Maju"
+        /(?:Kepada|Tagihan\s*Kepada|Billed?\s*To|Client|Customer|Pelanggan)[:\s]+([A-Z][^\n]{2,60})/im,
         /(?:Yth\.?|Kepada\s*Yth\.?)[:\s]*\n?\s*([A-Z][^\n]{2,60})/im,
       ];
       for (const p of patterns) {
@@ -206,14 +226,27 @@ const invoiceRules: ExtractRule[] = [
   },
   {
     field: 'company_name',
-    extract: (_text, lines) => {
-      // Biasanya company name ada di baris pertama atau kedua (header dokumen)
+    extract: (text, lines) => {
+      // Coba dari footer: "issued by Caesar Agency" atau "© 2026 Caesar Agency"
+      const footerPatterns = [
+        /(?:issued\s+by|from|oleh)\s+([A-Z][A-Za-z\s\.]{2,60}?)(?:\.|,|\n|$)/im,
+        /©\s*\d{4}\s+([A-Z][A-Za-z\s\.]{2,60}?)(?:\.|,|\n|$)/im,
+      ];
+      for (const p of footerPatterns) {
+        const m = text.match(p);
+        if (m?.[1]) {
+          const val = m[1].trim();
+          if (val.length > 2) return { value: val, confidence: 0.75 };
+        }
+      }
+      // Fallback: baris pertama yang bukan "INVOICE/RECEIPT" dan bukan kode dokumen
       for (let i = 0; i < Math.min(5, lines.length); i++) {
-        const l = lines[i];
-        // Skip baris yang hanya berisi "INVOICE" atau angka
-        if (/^(?:INVOICE|RECEIPT|KWITANSI|\d+)$/i.test(l.trim())) continue;
+        const l = lines[i].trim();
+        if (/^(?:INVOICE|RECEIPT|KWITANSI|\d+)$/i.test(l)) continue;
+        // Skip baris yang terlihat seperti kode dokumen (banyak dash/angka)
+        if ((l.match(/-/g) ?? []).length >= 3) continue;
         if (l.length > 2 && l.length < 80) {
-          return { value: l.trim(), confidence: 0.6 };
+          return { value: l, confidence: 0.6 };
         }
       }
       return { value: null, confidence: 0 };
@@ -372,9 +405,9 @@ function normalizeDate(str: string): string {
     januari: '01', februari: '02', maret: '03', april: '04',
     mei: '05', juni: '06', juli: '07', agustus: '08',
     september: '09', oktober: '10', november: '11', desember: '12',
-    january: '01', february: '02', march: '03', may: '05',
-    june: '06', july: '07', august: '08', september2: '09',
-    october: '10', november2: '11', december: '12',
+    january: '01', february: '02', march: '03', april2: '04', may: '05',
+    june: '06', july: '07', august: '08',
+    october: '10', december: '12',
     jan: '01', feb: '02', mar: '03', apr: '04', jun: '06',
     jul: '07', aug: '08', sep: '09', oct: '10', nov: '11', dec: '12',
   };
