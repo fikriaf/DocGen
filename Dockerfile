@@ -67,6 +67,7 @@ RUN npm ci --omit=dev
 # TemplateLoader uses __dirname (dist/engine/) -> resolves to dist/templates/
 COPY --from=builder /app/dist ./dist
 COPY src/templates ./dist/templates
+COPY public ./dist/public
 
 EXPOSE 3000
 
