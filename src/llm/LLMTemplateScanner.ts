@@ -2,7 +2,8 @@ import OpenAI from 'openai';
 
 export class LLMTemplateScanner {
   private static getClient(): OpenAI {
-    const apiKey = process.env.LLM_API_KEY || 'sk-sp-accba543725045d3ac24233cf0d97e48';
+    const apiKey = process.env.LLM_API_KEY || process.env.OPENROUTER_API_KEY;
+    if (!apiKey) throw new Error('API key tidak di-set di environment variables (LLM_API_KEY atau OPENROUTER_API_KEY)');
     
     return new OpenAI({
       baseURL: process.env.LLM_BASE_URL || 'https://coding-intl.dashscope.aliyuncs.com/v1',
@@ -12,7 +13,7 @@ export class LLMTemplateScanner {
 
   static async scanFieldsFromText(text: string): Promise<string[]> {
     const client = this.getClient();
-    const model = 'qwen3.5-plus';
+    const model = process.env.LLM_MODEL || 'qwen3.5-plus';
 
     const prompt = `You are a document analyzer assistant. 
 I will provide you with the raw text extracted from a business document (like an invoice, receipt, or proposal).

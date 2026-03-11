@@ -13,7 +13,8 @@ import { TemplateLoader } from '../engine/TemplateLoader';
  */
 export class LLMFieldAnalyzer {
   private static getClient(): OpenAI {
-    const apiKey = process.env.OPENROUTER_API_KEY || 'sk-sp-accba543725045d3ac24233cf0d97e48';
+    const apiKey = process.env.LLM_API_KEY || process.env.OPENROUTER_API_KEY;
+    if (!apiKey) throw new Error('API key tidak di-set di environment variables (LLM_API_KEY atau OPENROUTER_API_KEY)');
     if (!apiKey) throw new Error('API key tidak di-set');
 
     return new OpenAI({
@@ -35,7 +36,7 @@ export class LLMFieldAnalyzer {
     data: Record<string, unknown>,
   ): Promise<Record<string, unknown>> {
     const client = this.getClient();
-    const model = 'qwen3.5-plus';
+    const model = process.env.LLM_MODEL || 'qwen3.5-plus';
 
     // Dapatkan field names dari schema
     const schema = TemplateLoader.loadSchema(templateId);
