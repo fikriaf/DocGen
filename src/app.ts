@@ -13,12 +13,11 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
 // Static files for API documentation
-const isProduction = process.env.NODE_ENV === 'production';
-const publicPath = isProduction 
-  ? path.join(__dirname, 'public') 
-  : path.join(__dirname, '../public');
+const publicPath = path.join(__dirname, 'public');
+console.log('[Static] Public path:', publicPath);
 
 app.use(express.static(publicPath));
+app.use('/api-spec', express.static(publicPath));
 
 // Basic request logger
 app.use((req, _res, next) => {
@@ -42,9 +41,7 @@ app.get('/health', (_req, res) => {
 
 // API Documentation (ReDoc)
 app.get('/docs', (_req, res) => {
-  const docsPath = isProduction 
-    ? path.join(__dirname, 'public/docs.html')
-    : path.join(__dirname, '../public/docs.html');
+  const docsPath = path.join(__dirname, 'public/docs.html');
   res.sendFile(docsPath);
 });
 
