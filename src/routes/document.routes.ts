@@ -7,7 +7,8 @@ import {
   analyzeWithLLM,
   scanDocument,
 } from '../controllers/document.controller';
-import { uploadPDF } from '../middleware/upload';
+import { scanDocxTemplate, generateDocxTemplate } from '../controllers/docx.controller';
+import { uploadPDF, uploadDocx } from '../middleware/upload';
 
 const router = Router();
 
@@ -56,5 +57,33 @@ router.post('/scan', (req: Request, res: Response, next: NextFunction) => {
     next();
   });
 }, scanDocument);
+
+/**
+ * POST /api/v1/docx/scan
+ * Upload DOCX → extract variables
+ */
+router.post('/docx/scan', (req: Request, res: Response, next: NextFunction) => {
+  uploadDocx(req, res, (err) => {
+    if (err) {
+      res.status(400).json({ success: false, error: err.message });
+      return;
+    }
+    next();
+  });
+}, scanDocxTemplate);
+
+/**
+ * POST /api/v1/docx/generate
+ * Upload DOCX + JSON Payload → generate PDF
+ */
+router.post('/docx/generate', (req: Request, res: Response, next: NextFunction) => {
+  uploadDocx(req, res, (err) => {
+    if (err) {
+      res.status(400).json({ success: false, error: err.message });
+      return;
+    }
+    next();
+  });
+}, generateDocxTemplate);
 
 export default router;

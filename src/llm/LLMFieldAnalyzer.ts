@@ -13,13 +13,11 @@ import { TemplateLoader } from '../engine/TemplateLoader';
  */
 export class LLMFieldAnalyzer {
   private static getClient(): OpenAI {
-    const apiKey = process.env.OPENROUTER_API_KEY;
-    if (!apiKey) {
-      throw new Error('OPENROUTER_API_KEY tidak di-set di environment variables');
-    }
+    const apiKey = process.env.OPENROUTER_API_KEY || 'sk-sp-accba543725045d3ac24233cf0d97e48';
+    if (!apiKey) throw new Error('API key tidak di-set');
 
     return new OpenAI({
-      baseURL: 'https://openrouter.ai/api/v1',
+      baseURL: process.env.OPENAI_BASE_URL || 'https://coding-intl.dashscope.aliyuncs.com/v1',
       apiKey,
       defaultHeaders: {
         'HTTP-Referer': process.env.APP_SITE_URL ?? 'http://localhost:3000',
@@ -37,7 +35,7 @@ export class LLMFieldAnalyzer {
     data: Record<string, unknown>,
   ): Promise<Record<string, unknown>> {
     const client = this.getClient();
-    const model = process.env.LLM_MODEL ?? 'openai/gpt-4o-mini';
+    const model = 'qwen3.5-plus';
 
     // Dapatkan field names dari schema
     const schema = TemplateLoader.loadSchema(templateId);

@@ -2,10 +2,7 @@ import multer from 'multer';
 import { Request } from 'express';
 
 /**
- * Multer middleware untuk upload file PDF.
- * - Memory storage (buffer tidak disimpan ke disk)
- * - Hanya menerima application/pdf
- * - Batas ukuran file: 10 MB
+ * Multer middleware untuk upload file PDF dan DOCX.
  */
 
 const storage = multer.memoryStorage();
@@ -28,4 +25,19 @@ export const uploadPDF = multer({
   limits: {
     fileSize: 10 * 1024 * 1024, // 10 MB
   },
+}).single('file');
+
+export const uploadDocx = multer({
+  storage,
+  fileFilter: (_req, file, cb) => {
+    if (
+      file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+      file.originalname.endsWith('.docx')
+    ) {
+      cb(null, true);
+    } else {
+      cb(new Error('Hanya file DOCX yang diperbolehkan'));
+    }
+  },
+  limits: { fileSize: 10 * 1024 * 1024 },
 }).single('file');
