@@ -15,6 +15,23 @@ export class LLMSmartReplacer {
     });
   }
 
+  static buildXmlRegex(searchStr: string): RegExp {
+    const chars = searchStr.split('');
+    let pattern = '';
+    for (let i = 0; i < chars.length; i++) {
+      let char = chars[i];
+      if (char === ' ') {
+        pattern += '(?:\\s|<[^>]+>)+';
+      } else {
+        pattern += char.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      }
+      if (i < chars.length - 1 && char !== ' ' && chars[i+1] !== ' ') {
+        pattern += '(?:<[^>]+>)*';
+      }
+    }
+    return new RegExp(pattern, 'g');
+  }
+
   static async findReplacements(
     htmlText: string,
     payload: Record<string, any>

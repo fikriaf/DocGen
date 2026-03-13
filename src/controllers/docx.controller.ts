@@ -4,6 +4,7 @@ import Docxtemplater from 'docxtemplater';
 import { LibreOfficeConverter } from '../engine/LibreOfficeConverter';
 import { Watermarker } from '../engine/Watermarker';
 import { LLMTemplateScanner } from '../llm/LLMTemplateScanner';
+import { LLMSmartReplacer } from '../llm/LLMSmartReplacer';
 
 // POST /api/v1/docx/scan
 export async function scanDocxTemplate(req: Request, res: Response): Promise<void> {
@@ -76,6 +77,41 @@ export async function generateDocxTemplate(req: Request, res: Response): Promise
     // 1. Load DOCX
     const content = req.file.buffer;
     const zip = new PizZip(content);
+
+    // 1.5 Smart Replace (Pilihan 2 AI: ganti teks statis langsung di XML)
+    let reqOptions: any = {};
+    if (req.body.options) {
+      try {
+        reqOptions = typeof req.body.options === 'string' ? JSON.parse(req.body.options) : req.body.options;
+      } catch (e) {}
+    }
+
+    if (reqOptions.smartReplace || Object.keys(payload).length > 0) {
+      console.log('[generateDocxTemplate] Menjalankan LLMSmartReplacer untuk mengganti teks statis di DOCX XML...');
+      // Extract raw text for LLM to analyze
+      const docXml = zip.file('word/document.xml')?.asText() || '';
+      const cleanText = docXml.replace(/<[^>]+>/g, ' ');
+      
+      const replacements = await LLMSmartReplacer.findReplacements(cleanText, payload);
+      
+      if (replacements.length > 0) {
+        // Iterate over all xml files (headers, footers, document)
+        const xmlFiles = Object.keys((zip as any).files).filter(f => f.endsWith('.xml'));
+        for (const file of xmlFiles) {
+          let xmlContent = zip.file(file)?.asText();
+          if (!xmlContent) continue;
+          
+          for (const r of replacements) {
+            if (r.old && r.new) {
+              console.log(`[SmartReplace] Mengganti di ${file}: "${r.old}" menjadi "${r.new}"`);
+              const regex = LLMSmartReplacer.buildXmlRegex(r.old);
+              xmlContent = xmlContent.replace(regex, r.new);
+            }
+          }
+          (zip as any).file(file, xmlContent);
+        }
+      }
+    }
 
     // 2. Inject Payload using Docxtemplater
     // Standard delimiter is { } but we configure it to support both by removing xml tags and normalizing? No.
