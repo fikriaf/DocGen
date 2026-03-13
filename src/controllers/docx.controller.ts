@@ -5,6 +5,7 @@ import mammoth from 'mammoth';
 import { PDFRenderer } from '../engine/PDFRenderer';
 import { Watermarker } from '../engine/Watermarker';
 import { LLMTemplateScanner } from '../llm/LLMTemplateScanner';
+import { LLMSmartReplacer } from '../llm/LLMSmartReplacer';
 
 // POST /api/v1/docx/scan
 export async function scanDocxTemplate(req: Request, res: Response): Promise<void> {
@@ -105,7 +106,30 @@ export async function generateDocxTemplate(req: Request, res: Response): Promise
 
     // 3. Convert DOCX to HTML
     const mammothResult = await mammoth.convertToHtml({ buffer: generatedBuffer });
-    const bodyHtml = mammothResult.value;
+    let bodyHtml = mammothResult.value;
+
+    // 3.5. Smart Replace (Pilihan 2 AI: ganti teks statis langsung)
+    // Cek apakah ada request untuk AI smart replace. Jika payload ada tapi Docxtemplater mungkin tidak ganti apa2
+    let reqOptions: any = {};
+    if (req.body.options) {
+      try {
+        reqOptions = typeof req.body.options === 'string' ? JSON.parse(req.body.options) : req.body.options;
+      } catch (e) {}
+    }
+    
+    // Auto-detect: if options.smartReplace is true, or if we want to default to true for user
+    if (reqOptions.smartReplace || Object.keys(payload).length > 0) {
+       console.log('[generateDocxTemplate] Menjalankan LLMSmartReplacer untuk mengganti teks statis...');
+       const replacements = await LLMSmartReplacer.findReplacements(bodyHtml, payload);
+       for (const r of replacements) {
+         if (r.old && r.new) {
+           console.log(`[SmartReplace] Mengganti "${r.old}" menjadi "${r.new}"`);
+           // Escape special regex chars from r.old
+           const escapeRegExp = (string: string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+           bodyHtml = bodyHtml.replace(new RegExp(escapeRegExp(r.old), 'g'), r.new);
+         }
+       }
+    }
 
     // 4. Wrap with some styling to look like a doc
     const html = `
