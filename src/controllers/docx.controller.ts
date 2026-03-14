@@ -86,7 +86,7 @@ export async function generateDocxTemplate(req: Request, res: Response): Promise
       } catch (e) {}
     }
 
-    if (reqOptions.smartReplace || Object.keys(payload).length > 0) {
+    if (reqOptions.smartReplace) {
       console.log('[generateDocxTemplate] Menjalankan LLMSmartReplacer untuk mengganti teks statis di DOCX XML...');
       // Extract raw text for LLM to analyze
       const docXml = zip.file('word/document.xml')?.asText() || '';
