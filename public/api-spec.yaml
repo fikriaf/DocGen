@@ -36,6 +36,11 @@ paths:
         
         Supports both explicit markers like `{{field_name}}` and can use AI to detect
         fields from plain text documents.
+        
+        ### Example (cURL)
+        ```bash
+        curl -X POST -F "file=@template.docx" http://localhost:3000/api/v1/docx/scan
+        ```
       operationId: scanDocxTemplate
       requestBody:
         required: true
@@ -81,6 +86,44 @@ paths:
         - Injects payload JSON into DOCX variables
         - Converts DOCX to PDF using LibreOffice
         - Optionally applies watermark
+        
+        ### Example (cURL)
+        ```bash
+        curl -X POST           -F "file=@template.docx"           -F "payload={\"client_name\": \"Budi\", \"total\": \"Rp 500.000\"}"           -F "options={\"filename\": \"Invoice_Budi\"}"           http://localhost:3000/api/v1/docx/generate --output result.pdf
+        ```
+        
+        ### Example (Node.js / Axios)
+        ```javascript
+        const axios = require('axios');
+        const FormData = require('form-data');
+        const fs = require('fs');
+
+        const form = new FormData();
+        form.append('file', fs.createReadStream('template.docx'));
+        
+        // Data to fill in the DOCX {{ }} placeholders
+        form.append('payload', JSON.stringify({
+          client_name: "Budi Santoso",
+          total: "Rp 500.000"
+        }));
+        
+        // Optional settings
+        form.append('options', JSON.stringify({
+          filename: "Invoice_Budi",
+          smartReplace: false,
+          watermark: {
+            enabled: true,
+            text: "DRAFT",
+            color: "#FF0000"
+          }
+        }));
+
+        axios.post('https://docgen-production-503d.up.railway.app/api/v1/docx/generate', form, {
+          responseType: 'arraybuffer' // Important to receive PDF file
+        }).then(res => {
+          fs.writeFileSync('result.pdf', res.data);
+        });
+        ```
       operationId: generateDocxTemplate
       requestBody:
         required: true
@@ -137,6 +180,11 @@ paths:
         Upload a PDF to extract fields via pattern matching or OCR.
         
         Uses regex for text-based PDFs or OCR + LLM for image-based PDFs.
+        
+        ### Example (cURL)
+        ```bash
+        curl -X POST -F "file=@document.pdf" http://localhost:3000/api/v1/scan
+        ```
       operationId: scanDocument
       parameters:
         - name: templateId
