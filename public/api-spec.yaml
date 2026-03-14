@@ -191,22 +191,27 @@ paths:
                 file:
                   type: string
                   format: binary
-                  description: DOCX template file
+                  description: DOCX template file (e.g., invoice_template.docx)
                 payload:
-                  type: object
+                  type: string
+                  description: JSON string containing field values to inject
                   description: JSON object containing field values to inject
                   example:
                     invoice_no: "INV-2026-001"
                     client_name: "John Doe"
                     date: "2026-03-13"
                 options:
-                  type: object
-                  description: Optional JSON object for watermark and PDF settings
-                  example:
-                    watermark:
-                      enabled: true
-                      text: "DRAFT"
-                      color: "#FF0000"
+                  type: string
+                  description: JSON string for options (smartReplace, filename, watermark)
+                  example: |
+                    {
+                      "smartReplace": false,
+                      "filename": "Invoice_Budi",
+                      "watermark": {
+                        "enabled": true,
+                        "text": "LUNAS"
+                      }
+                    }
             encoding:
               payload:
                 contentType: application/json

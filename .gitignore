@@ -134,3 +134,25 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Ad-hoc scripts & generated files
+*.js
+*.docx
+*.pdf
+*.txt
+*.png
+*.json
+!package.json
+!package-lock.json
+!tsconfig.json
+!scan-result.json
+scan-result.json
+nul
+
+# Agent & AI tool folders
+.agent/
+.agents/
+.claude/
+.kiro/
+.qwen/
+skills/

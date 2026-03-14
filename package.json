@@ -1,7 +1,7 @@
 {
   "name": "docgen",
   "version": "1.0.0",
-  "description": "",
+  "description": "[![Node.js](https://img.shields.io/badge/node-%3E%3D20-brightgreen)](https://nodejs.org/) [![TypeScript](https://img.shields.io/badge/typescript-5.x-blue)](https://www.typescriptlang.org/) [![Express](https://img.shields.io/badge/express-5.x-lightgrey)](https://expressjs.com/) [![License: ISC](https://img.shields.io/badge/license-ISC-yellow)](LICENSE) [![Railway](https://img.shields.io/badge/deploy-Railway-blueviolet)](https://railway.app/)",
   "main": "index.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/app.ts",
@@ -15,13 +15,10 @@
   "dependencies": {
     "@openrouter/sdk": "^0.9.11",
     "adm-zip": "^0.5.16",
-    "docx": "^9.6.1",
     "docxtemplater": "^3.68.3",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
-    "handlebars": "^4.7.8",
     "libreoffice-convert": "^1.8.1",
-    "mammoth": "^1.11.0",
     "multer": "^2.1.1",
     "openai": "^6.25.0",
     "pdf-lib": "^1.17.1",
@@ -29,7 +26,6 @@
     "pdf2json": "^4.0.2",
     "pdf2pic": "^3.2.0",
     "pizzip": "^3.2.0",
-    "puppeteer": "^24.38.0",
     "redoc": "^2.5.2",
     "tesseract.js": "^7.0.0",
     "zod": "^4.3.6"
@@ -37,12 +33,19 @@
   "devDependencies": {
     "@types/adm-zip": "^0.5.7",
     "@types/express": "^5.0.6",
-    "@types/handlebars": "^4.0.40",
     "@types/multer": "^2.0.0",
     "@types/node": "^25.3.3",
     "@types/pdf-parse": "^1.1.5",
     "@types/pizzip": "^3.0.5",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.9.3"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fikriaf/DocGen.git"
+  },
+  "bugs": {
+    "url": "https://github.com/fikriaf/DocGen/issues"
+  },
+  "homepage": "https://github.com/fikriaf/DocGen#readme"
 }

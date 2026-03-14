@@ -1,5 +1,12 @@
 import OpenAI from 'openai';
-import { SchemaField } from '../engine/TemplateLoader';
+export interface SchemaField {
+  name: string;
+  type: 'string' | 'number' | 'date' | 'array';
+  required?: boolean;
+  format?: string;
+  description?: string;
+  items?: SchemaField[];
+}
 
 /**
  * LLMFieldParser: Kirim teks OCR ke LLM untuk extract field values.

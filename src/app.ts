@@ -1,7 +1,6 @@
 import 'dotenv/config';
 import express from 'express';
 import documentRoutes from './routes/document.routes';
-import { PDFRenderer } from './engine/PDFRenderer';
 import path from 'path';
 
 const app = express();
@@ -67,13 +66,11 @@ const server = app.listen(PORT, () => {
 // Graceful shutdown
 process.on('SIGTERM', async () => {
   console.log('Shutting down gracefully...');
-  await PDFRenderer.close();
   server.close(() => process.exit(0));
 });
 
 process.on('SIGINT', async () => {
   console.log('\nShutting down...');
-  await PDFRenderer.close();
   server.close(() => process.exit(0));
 });
 

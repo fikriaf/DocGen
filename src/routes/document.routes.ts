@@ -1,19 +1,10 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import multer from 'multer';
-import {
-  analyzeWithLLM,
-  scanDocument,
-} from '../controllers/document.controller';
+import { scanDocument } from '../controllers/document.controller';
 import { scanDocxTemplate, generateDocxTemplate } from '../controllers/docx.controller';
 import { uploadPDF, uploadDocx } from '../middleware/upload';
 
 const router = Router();
-
-/**
- * POST /api/v1/analyze
- * [Opsional] Analyze data dengan LLM untuk smart field mapping + validasi semantik.
- */
-router.post('/analyze', analyzeWithLLM);
 
 /**
  * POST /api/v1/scan
@@ -24,12 +15,10 @@ router.post('/analyze', analyzeWithLLM);
 router.post('/scan', (req: Request, res: Response, next: NextFunction) => {
   uploadPDF(req, res, (err) => {
     if (err instanceof multer.MulterError) {
-      // e.g. file too large
       res.status(400).json({ success: false, error: `Upload error: ${err.message}` });
       return;
     }
     if (err instanceof Error) {
-      // e.g. non-PDF file type
       res.status(400).json({ success: false, error: err.message });
       return;
     }
