@@ -102,11 +102,11 @@ paths:
                   format: binary
                   description: DOCX template file (e.g., Master_Caesar.docx)
                 payload:
-                  type: string
-                  description: JSON string containing field values to inject
+                  type: object
+                  description: JSON object containing field values to inject
                 options:
-                  type: string
-                  description: JSON string for options (smartReplace, filename, watermark)
+                  type: object
+                  description: JSON object for options (smartReplace, filename, watermark)
             encoding:
               payload:
                 contentType: application/json
@@ -116,31 +116,29 @@ paths:
               Master_Caesar:
                 summary: Master Caesar Example
                 value:
-                  payload: >-
-                    {
-                      "invoice_no": "INV-2026-MCT999",
-                      "invoice_date": "15 Maret 2026",
-                      "due_date": "20 Maret 2026",
-                      "client_name": "PT. Budi Sempurna",
-                      "client_address": "Gedung Cyber, Lt 2, Jakarta Selatan",
-                      "client_number": "+62 812 3456 7890",
-                      "item_name": "Pengembangan Sistem Integrasi API Backend",
-                      "item_quantity": "1",
-                      "item_price_per_unit": "50.000.000",
-                      "item_amount": "50.000.000",
-                      "payment_bank": "BCA",
-                      "payment_name_bank": "ANTON SUPRIADI",
-                      "number_bank": "1234567890",
-                      "summary_subtotal": "50.000.000",
-                      "summary_vat": "5.500.000",
-                      "total_due": "55.500.000"
-                    }
-                  options: >-
-                    {
-                      "smartReplace": false,
-                      "filename": "Invoice_Budi",
-                      "watermark": { "enabled": true, "text": "LUNAS" }
-                    }
+                  payload:
+                    invoice_no: "INV-2026-MCT999"
+                    invoice_date: "15 Maret 2026"
+                    due_date: "20 Maret 2026"
+                    client_name: "PT. Budi Sempurna"
+                    client_address: "Gedung Cyber, Lt 2, Jakarta Selatan"
+                    client_number: "+62 812 3456 7890"
+                    item_name: "Pengembangan Sistem Integrasi API Backend"
+                    item_quantity: "1"
+                    item_price_per_unit: "50.000.000"
+                    item_amount: "50.000.000"
+                    payment_bank: "BCA"
+                    payment_name_bank: "ANTON SUPRIADI"
+                    number_bank: "1234567890"
+                    summary_subtotal: "50.000.000"
+                    summary_vat: "5.500.000"
+                    total_due: "55.500.000"
+                  options:
+                    smartReplace: false
+                    filename: "Invoice_Budi"
+                    watermark:
+                      enabled: true
+                      text: "LUNAS"
       responses:
         '200':
           description: PDF generated successfully
