@@ -104,7 +104,19 @@ paths:
                 payload:
                   type: string
                   description: JSON string containing field values to inject
-                  example: |
+                options:
+                  type: string
+                  description: JSON string for options (smartReplace, filename, watermark)
+            encoding:
+              payload:
+                contentType: application/json
+              options:
+                contentType: application/json
+            examples:
+              Master_Caesar:
+                summary: Master Caesar Example
+                value:
+                  payload: >-
                     {
                       "invoice_no": "INV-2026-MCT999",
                       "invoice_date": "15 Maret 2026",
@@ -123,17 +135,11 @@ paths:
                       "summary_vat": "5.500.000",
                       "total_due": "55.500.000"
                     }
-                options:
-                  type: string
-                  description: JSON string for options (smartReplace, filename, watermark)
-                  example: |
+                  options: >-
                     {
                       "smartReplace": false,
                       "filename": "Invoice_Budi",
-                      "watermark": {
-                        "enabled": true,
-                        "text": "LUNAS"
-                      }
+                      "watermark": { "enabled": true, "text": "LUNAS" }
                     }
       responses:
         '200':
