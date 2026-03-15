@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import express from 'express';
+import cors from 'cors';
 import documentRoutes from './routes/document.routes';
 import path from 'path';
 
@@ -8,6 +9,12 @@ const PORT = process.env.PORT ?? 3000;
 
 // ── Middleware ─────────────────────────────────────────────────────────────
 
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+  exposedHeaders: ['Content-Disposition']
+}));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
