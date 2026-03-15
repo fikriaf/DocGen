@@ -116,6 +116,7 @@ paths:
               Master_Caesar:
                 summary: Master Caesar Example
                 value:
+                  file: (binary DOCX file)
                   payload:
                     invoice_no: "INV-2026-MCT999"
                     invoice_date: "15 Maret 2026"
