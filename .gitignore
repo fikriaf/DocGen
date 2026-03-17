@@ -152,6 +152,9 @@ dist
 scan-result.json
 nul
 
+# Deployment guide (contains secrets)
+DEPLOYMENT.md
+
 # Agent & AI tool folders
 .agent/
 .agents/
